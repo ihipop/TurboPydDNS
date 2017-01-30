@@ -2,10 +2,18 @@
 
 [中文说明](README_CN.md)
 
-Yet another multi dDNS client
+Yet another multi dDNS client in **Python3 Only** (On purpose)
 
 This project is under developing and not stable.
 If you want to USE, please use Tagged version.
+
+USAGE
+----
+
+```bash
+python3 ddns.py pubyun --username=xx --password=xxx --ddnsname=xxx
+```
+
 
 TODO
 ----
