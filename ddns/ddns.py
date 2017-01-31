@@ -5,13 +5,24 @@
 # __author__ = 'ihipop'
 
 import click
-import logging,sys,os
+import os
 
-logger = logging.getLogger('')
+import  logging,sys
+
+ECHO=60
+logging.addLevelName(60,'ECHO')
+def _debugEcho(self:logging.Logger, message, *args, **kwargs):
+    if self.isEnabledFor(ECHO):
+        self._log(ECHO, message, args, **kwargs)
+logging.Logger.echo = _debugEcho
+
+
+logger = logging.getLogger()
 format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 screen = logging.StreamHandler(sys.stdout)
 screen.setFormatter(format)
 logger.addHandler(screen)
+
 
 
 def read_config(ctx, param, value):
@@ -37,17 +48,18 @@ def read_config(ctx, param, value):
 @click.group(invoke_without_command=True)
 @click.option('-c', '--config', callback=read_config, type=click.File('r'),
               help='A json file with default values for commands. {"command": {"options":5001}}')
-@click.option('-d','--debug', envvar='DEBUG', default=False, help='Debug mode,Multiply to increase Level',count=True,type=click.IntRange(0, 5, clamp=True)) # '''is_flag=True'''
+@click.option('-d','--debug', envvar='DEBUG', default=0, help='Debug mode,Multiply to increase Level',count=True,type=click.IntRange(0, 5, clamp=True)) # '''is_flag=True'''
 @click.pass_context
 def cli(ctx,**kwargs):
     sys.path.append(os.getcwd())
-    debug = logging.DEBUG - kwargs['debug'] * 10
-    print(debug)
+    # print(kwargs)
+    debug = logging.CRITICAL - kwargs['debug'] * 10
+    # print(debug)
     logger.setLevel(debug)
     if ctx.invoked_subcommand:
-        logger.info('I am about to invoke %s' % ctx.invoked_subcommand)
+        logger.echo('I am about to invoke %s' % ctx.invoked_subcommand)
     else:
-        logging.info('No SubCommand set.')
+        logger.echo('No SubCommand set.')
     ctx.obj = {}
     return ctx.obj.update(kwargs)
 

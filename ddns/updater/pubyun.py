@@ -31,7 +31,7 @@ class PubYunUpdater(Base3FactsHTTPUpdater):
 
     def build_payload(self):
         self._query.update({'hostname':self._hostname})
-        print(self._query)
+        # print(self._query)
         return super().build_payload()
 
     def parse_result(self,response:requests.models.Response):
