@@ -8,7 +8,7 @@
 用法
 ----
 ```bash
-python3 ddns.py pubyun --username=xx --password=xxx --ddnsname=xxx
+python3 turbo_py_ddns_client.py pubyun --username=xx --password=xxx --ddnsname=xxx
 ```
 
 TODO
