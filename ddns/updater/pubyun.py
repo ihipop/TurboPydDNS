@@ -46,6 +46,8 @@ class PubYunUpdater(Base3FactsHTTPUpdater):
         if response.status_code == 200:
             if text[0] in ['good','nochg']:
                 success = True
-        msg = self.info_code.get(text[0],text[0])+ ' (%s)' % text[0]
+            msg = self.info_code.get(text[0],text[0])+ ' (%s)' % text[0]
+        else:
+            msg = 'invalid http status code: %s' % response.status_code
         return (success,msg)
 

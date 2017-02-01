@@ -64,14 +64,31 @@ def cli(ctx,**kwargs):
     return ctx.obj.update(kwargs)
 
 @cli.command()
-@click.option('--username', help='password',required=True,envvar='password')
-@click.option('--password', help='username',required=True,envvar='username')
+@click.option('--username', help='password',required=True)
+@click.option('--password', help='username',required=True)
 @click.option('--ddnsname', help='Domain',required=True)
 @click.option('--api-url', help='Api-URL to Override',required=True,default='http://members.3322.net/dyndns/update')
 @click.pass_context
 def pubyun(self,**kwargs):
+    '''
+    PUBYUN(公云) www.pubyun.com in China
+    '''
     from .updater.pubyun import PubYunUpdater
     client = PubYunUpdater(kwargs['ddnsname'],kwargs['username'],kwargs['password'],api_url=kwargs['api_url'])
+    result = client.updater()
+    print(result)
+
+@cli.command()
+@click.option('--token', help='TOKEN is the API token for authentication/authorization',required=True)
+@click.option('--domains', help='DOMAINS is either a single domain or a comma separated list of domains',required=True)
+@click.option('--api-url', help='Api-URL to Override',required=True,default='https://www.duckdns.org/update')
+@click.pass_context
+def duckdns(self,**kwargs):
+    '''
+    Duck DNS is a free dynamic DNS hosted on Amazon VPC
+    '''
+    from .updater.duckdns import DuckDNSUpdater
+    client = DuckDNSUpdater(kwargs['domains'],kwargs['token'],api_url=kwargs['api_url'])
     result = client.updater()
     print(result)
 

@@ -37,24 +37,14 @@ class BaseUpdater(metaclass=ABCMeta):
         except:
             return  None
 
-
-
-
-class Base3FactsHTTPUpdater(BaseUpdater):
+class BaseHTTPUpdater(BaseUpdater):
     _api_url = None
-    _username = None
-    _password = None
-    _hostname = None
     _query = {}
     _data = {}
     _headers = {}
 
-    def __init__(self,hostname,username,password,api_url=None,*args, **kwargs):
-        for k,v in {'hostname':hostname,'username':username,'password':password}.items():
-            if  not k :
-                raise Exception(k + ' Must be set')
-            else:
-                setattr(self,'_'+k,v)
+    def __int__(self,*args, **kwargs):
+        api_url = kwargs['api_url']
         if api_url:
             self._api_url=api_url
         if isinstance(kwargs.get('query'),dict):
@@ -66,28 +56,49 @@ class Base3FactsHTTPUpdater(BaseUpdater):
     @abstractmethod
     def build_payload(self):
         url = self._api_url + '?' if '?' not in self._api_url else '&'
-        url  = url + urllib.parse.urlencode(self._query)
+        url = url + urllib.parse.urlencode(self._query)
         if self._useragent:
             self._headers.update({"User-Agent": self._useragent})
-        payload={
-            'url':url,
-            'data':self._data,
-            'auth':(self._username,self._password),
-            'headers':self._headers
+        payload = {
+            'url': url,
+            'data': self._data,
+            'auth': None,
+            'headers': self._headers
         }
-        logger.debug(payload)
         return payload
 
     def updater(self):
-        payload=self.build_payload()
+        payload = self.build_payload()
         timeout = 60
         try:
             if payload['data']:
-                r = requests.post(payload['url'],data=payload['data'],headers=payload['headers'],auth=payload['auth'],timeout=timeout)
+                r = requests.post(payload['url'], data=payload['data'], headers=payload['headers'],
+                                  auth=payload['auth'], timeout=timeout)
             else:
-                r = requests.get(payload['url'], headers=payload['headers'],auth=payload['auth'],timeout=timeout)
+                r = requests.get(payload['url'], headers=payload['headers'], auth=payload['auth'], timeout=timeout)
             return self.parse_result(r)
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
             msg = "an error occurred while updating IP at '%s'" % payload['url']
             logging.warning(msg, exc_info=exc)
-            return (False,msg)
+            return (False, msg)
+
+class Base3FactsHTTPUpdater(BaseHTTPUpdater):
+    _username = None
+    _password = None
+    _hostname = None
+
+    def __init__(self,hostname,username,password,*args, **kwargs):
+        for k,v in {'hostname':hostname,'username':username,'password':password}.items():
+            if  not k :
+                raise Exception(k + ' Must be set')
+            else:
+                setattr(self,'_'+k,v)
+        super().__init__()
+
+
+    def build_payload(self):
+        payload = super().build_payload()
+        if self._username and self._password:
+            payload['auth'] = (self._username, self._password)
+        return payload
+

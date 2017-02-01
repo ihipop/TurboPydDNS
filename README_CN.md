@@ -9,12 +9,15 @@
 ----
 ```bash
 python3 turbo_py_ddns_client.py pubyun --username=xx --password=xxx --ddnsname=xxx
+python3 turbo_py_ddns_client.py --help
+python3 turbo_py_ddns_client.py pubyun --help
+python3 turbo_py_ddns_client.py duckdns --help
 ```
 
 TODO
 ----
 - [x] 支持 `PUBYUN（公云）` 
-- [ ] 支持 `DuckDNS` 
+- [x] 支持 `DuckDNS` 
 - [ ] 全局自动检测IP变化更新DNS
   
 License
